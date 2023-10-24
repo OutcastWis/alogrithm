@@ -117,7 +117,7 @@ class rb_tree {
   typedef _rb_tree_iterator iterator;
 
  public:
-  rb_tree() {
+  rb_tree() : num_(0) {
     header_.color_ = red;
     header_.left_ = header_.right_ = &header_;
     header_.parent_ = nullptr;
@@ -136,6 +136,8 @@ class rb_tree {
 
   iterator end() { return iterator(&header_); }
 
+  size_t size() const { return num_; }
+
  private:
   std::pair<_rb_tree_node *, _rb_tree_node *> locate_(
       const std::string &__key) {
@@ -150,8 +152,8 @@ class rb_tree {
     auto may_equal = y;
     if (comp) {
       // 可能key < y.key, 但key == y.prev.key
-      if (may_equal ==
-          header_.left_)  // begin()没有prev, 特判. 同时如果空树, 也会走这里
+      if (may_equal == header_.left_)
+        // begin()没有prev, 特判. 同时如果空树, 也会走这里
         return std::pair<_rb_tree_node *, _rb_tree_node *>(nullptr, y);
       may_equal = _rb_tree_node::prev(may_equal);
     }
@@ -174,8 +176,8 @@ class rb_tree {
       __p->left_ = x;
       if (__p == &header_) {
         // 空树. 根据locate_, 空树时, is_left一定是true
-        header_.right_ = __p;
-        header_.parent_ = __p;
+        header_.right_ = x;
+        header_.parent_ = x;
       } else if (__p == header_.left_)
         header_.left_ = x;
     } else {
@@ -183,18 +185,18 @@ class rb_tree {
       if (__p == header_.right_) header_.right_ = x;
     }
 
-    rebalance_(x, __p);
+    if (__p != &header_) rebalance_(x, __p);
     ++num_;
     return x;
   }
 
   void rebalance_(_rb_tree_node *__x, _rb_tree_node *__p) {
-    _rb_tree_node *g = nullptr, *uncle;
+    _rb_tree_node *g = nullptr, *uncle = nullptr;
     do {
       // Case 1: parent is black
       if (__p->color_ == black) return;
 
-      if ((g = __p->parent_) == nullptr) {
+      if ((g = __p->parent_) == nullptr || g == &header_) {
         // Case 4: parent is root and red
         __p->color_ = black;
         return;
@@ -207,10 +209,10 @@ class rb_tree {
       uncle->color_ = black;
       g->color_ = red;
       __x = g;
-    } while (__p = __x->parent_);
+    } while ((__p = __x->parent_) != &header_);
 
-    // Case_I3: N is the root and red.
-    if (__p == nullptr) return;
+    // Case 3: N is the root and red.
+    if (__p == &header_) return;
 
     // parent is red, uncle is black.
     bool is_left = g->left_ == __p;
@@ -221,7 +223,7 @@ class rb_tree {
       __x = __p;
       __p = is_left ? g->left_ : g->right_;
     }
-    // Case 6:
+    // Case 6: x, p, g一条线
     rotate_(g, !is_left);
     __p->color_ = black;
     g->color_ = red;
@@ -249,12 +251,12 @@ class rb_tree {
       __p->parent_ = s;
     }
 
-    if (g)
+    if (g != &header_)
       __p == g->left_ ? (g->left_ = s) : (g->right_ = s);
     else
       header_.parent_ = s;
   }
-
+private:
   _rb_tree_node header_;  // 方便找最大, 最小. header->left_指向最小值,
                           // header_->right_指向最大值
   size_t num_;

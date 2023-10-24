@@ -41,6 +41,7 @@ void t_insert(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
     auto end = high_resolution_clock::now();
     my_used.push_back(std::chrono::duration_cast<MS>(end - st));
   }
+
   std::cout << "INSERT:\n";
   print_info("std", std_used);
   print_info("my", my_used);
@@ -54,8 +55,11 @@ void t_iterator(std::map<std::string, int>& std_map, wzj::rb_tree& my_map) {
     auto it = std_map.begin();
     auto it2 = my_map.begin();
     for (; it != std_map.end(); ++it, ++it2) {
-      assert(it->first == it2->first);
-      assert(it->second == it2->second);
+      if (it->first != it2->first || it->second != it2->second) {
+        std::cout << "Assert failed: {" << it->first << "," << it->second
+                  << "} != {" << it2->first << "," << it2->second << "}\n";
+        return;
+      }
     }
   }
 
