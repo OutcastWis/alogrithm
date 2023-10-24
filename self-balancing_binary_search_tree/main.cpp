@@ -10,6 +10,8 @@
 using namespace std::chrono;
 typedef std::chrono::milliseconds MS;
 
+const int epoch=1e6;
+
 void print_info(const std::string& group, const std::vector<MS>& data) {
   int64_t tot = 0;
   for (auto i : data) tot += i.count();
@@ -23,7 +25,7 @@ void t_insert(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
   std::vector<MS> std_used;
   std::vector<MS> my_used;
 
-  const int epoch = 1e7;
+
   {  // std
     auto st = high_resolution_clock::now();
 
@@ -87,12 +89,57 @@ void t_iterator(std::map<std::string, int>& std_map, wzj::rb_tree& my_map) {
   print_info("my", my_used);
 }
 
+void t_erase(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
+  std::vector<MS> std_used;
+  std::vector<MS> my_used;
+
+  std::map<std::string, int> comp_map = *std_map;
+
+
+  {  // std
+    auto cit = comp_map.begin();
+    auto st = high_resolution_clock::now();
+    auto it = std_map->begin();
+    for (int i = 0; i < epoch; ++i, ++cit) {
+      assert(cit->second == it->second);
+      it = std_map->erase(it);
+    }
+
+    auto end = high_resolution_clock::now();
+    std_used.push_back(std::chrono::duration_cast<MS>(end - st));
+  }
+
+  {  // my
+    auto cit = comp_map.begin();
+    auto st = high_resolution_clock::now();
+    auto it = my_map->begin();
+    for (int i = 0; i < epoch; ++i, ++cit) {
+      assert(cit->second == it->second);
+      it = my_map->erase(it);
+    }
+
+    auto end = high_resolution_clock::now();
+    my_used.push_back(std::chrono::duration_cast<MS>(end - st));
+  }
+
+  if (std_map->size() != my_map->size()) {
+    std::cout << "Assert size failed: std_map.size = " << std_map->size()
+              << ", my_map.size = " << my_map->size() << std::endl;
+    return;
+  }
+
+  std::cout << "ERASE:\n";
+  print_info("std", std_used);
+  print_info("my", my_used);
+}
+
 int main() {
   std::map<std::string, int> std_map;
   wzj::rb_tree my_map;
 
   t_insert(&std_map, &my_map);
   t_iterator(std_map, my_map);
+  t_erase(&std_map, &my_map);
 
   return 0;
 }
