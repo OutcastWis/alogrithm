@@ -10,7 +10,7 @@
 using namespace std::chrono;
 typedef std::chrono::milliseconds MS;
 
-const int epoch=1e6;
+int epoch=1e6;
 
 void print_info(const std::string& group, const std::vector<MS>& data) {
   int64_t tot = 0;
@@ -38,7 +38,10 @@ void t_insert(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
   {  // my
     auto st = high_resolution_clock::now();
 
-    for (auto i = 0; i < epoch; ++i) my_map->insert(std::to_string(i), i);
+    for (auto i = 0; i < epoch; ++i) {
+      my_map->insert(std::to_string(i), i);
+      assert(my_map->check());
+    }
 
     auto end = high_resolution_clock::now();
     my_used.push_back(std::chrono::duration_cast<MS>(end - st));
@@ -116,6 +119,7 @@ void t_erase(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
     for (int i = 0; i < epoch; ++i, ++cit) {
       assert(cit->second == it->second);
       it = my_map->erase(it);
+      assert(my_map->check());
     }
 
     auto end = high_resolution_clock::now();
@@ -134,6 +138,7 @@ void t_erase(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
 }
 
 int main() {
+
   std::map<std::string, int> std_map;
   wzj::rb_tree my_map;
 

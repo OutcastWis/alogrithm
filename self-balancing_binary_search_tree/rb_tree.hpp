@@ -136,7 +136,6 @@ class rb_tree {
     auto r = locate_(key);
     if (r.first) {
       delete_(r.first);
-      delete r.first;
       --num_;
       return 1;
     }
@@ -147,7 +146,6 @@ class rb_tree {
     auto r = it;
     ++r;
     delete_(it.node_);
-    delete it.node_;
     --num_;
     return r;
   }
@@ -158,7 +156,19 @@ class rb_tree {
 
   size_t size() const { return num_; }
 
+  // 检查是否满足红黑树特性
+  bool check() {
+    auto x = header_.parent_;
+    if (!x) return true;
+    auto sl = count_black_(x->left_);
+    if (sl == -1) return false;
+    auto sr = count_black_(x->right_);
+    return sl == sr;
+  }
+
  private:
+  // key存在, 则返回{key's node, nil}, 否则返回{nil, key's parent}.
+  // 空树时返回{nil, header_}
   std::pair<_rb_tree_node *, _rb_tree_node *> locate_(
       const std::string &__key) {
     _rb_tree_node *x = header_.parent_, *y = &header_;
@@ -312,17 +322,21 @@ class rb_tree {
       p = __x->parent_;
       // x has at least one nil child
       if (n) {
-      //  assert(n->color_ == red);
+        assert(n->color_ == red);
         n->parent_ = p;
       }
       // 最小和最大一定在这里, 因为它们最多一个儿子
       if (header_.left_ == __x) {
-        header_.left_ =
-            __x->right_ ? (n ? _rb_tree_node::left_most(n) : nullptr) : p;
+        header_.left_ = __x->right_
+                            ? (assert(n == __x->right_),
+                               n ? _rb_tree_node::left_most(n) : nullptr)
+                            : p;
       }
       if (header_.right_ == __x) {
-        header_.right_ =
-            __x->left_ ? (n ? _rb_tree_node::right_most(n) : nullptr) : p;
+        header_.right_ = __x->left_
+                             ? (assert(n == __x->left_),
+                                n ? _rb_tree_node::right_most(n) : nullptr)
+                             : p;
       }
     }
     // 设置parent
@@ -335,6 +349,8 @@ class rb_tree {
       __x->parent_->right_ = n;
 
     if (__x->color_ == black) delete_fixup_(y == __x ? n : y, p);
+
+    delete __x;
   }
 
   void delete_fixup_(_rb_tree_node *__x, _rb_tree_node *__p) {
@@ -343,7 +359,7 @@ class rb_tree {
         auto s = __p->right_;  // sibling of __x
         if (s->color_ == red) {
           // Case 1
-          s->color_ == black;
+          s->color_ = black;
           __p->color_ = red;
           rotate_(__p, true);
           s = __p->right_;
@@ -376,7 +392,7 @@ class rb_tree {
         auto s = __p->left_;  // sibling of __x
         if (s->color_ == red) {
           // Case 1
-          s->color_ == black;
+          s->color_ = black;
           __p->color_ = red;
           rotate_(__p, false);
           s = __p->left_;
@@ -407,6 +423,23 @@ class rb_tree {
       }
     }
     if (__x) __x->color_ = black;
+  }
+
+  int count_black_(_rb_tree_node *__x) {
+    // all nil node is black
+    if (__x == nullptr) return 1;
+
+    // red node can't have red child
+    if (__x->color_ == red && ((__x->left_ && __x->left_->color_ == red) ||
+                               (__x->right_ && __x->right_->color_ == red)))
+      return -1;
+
+    auto sl = count_black_(__x->left_);
+    if (sl == -1) return -1;
+    auto sr = count_black_(__x->right_);
+    if (sl != sr) return -1;  // must have same number of block nodes
+
+    return sl + (__x->color_ == black);
   }
 
  private:
