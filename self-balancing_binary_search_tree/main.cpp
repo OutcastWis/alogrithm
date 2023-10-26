@@ -5,12 +5,13 @@
 #include <string>
 #include <vector>
 
+#include "avl_tree.hpp"
 #include "rb_tree.hpp"
 
 using namespace std::chrono;
 typedef std::chrono::milliseconds MS;
 
-int epoch=1e6;
+int epoch;
 
 void print_info(const std::string& group, const std::vector<MS>& data) {
   int64_t tot = 0;
@@ -21,10 +22,10 @@ void print_info(const std::string& group, const std::vector<MS>& data) {
             << tot * 1.0 / data.size() << std::endl;
 }
 
-void t_insert(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
+template <typename _My>
+void t_insert(std::map<std::string, int>* std_map, _My* my_map) {
   std::vector<MS> std_used;
   std::vector<MS> my_used;
-
 
   {  // std
     auto st = high_resolution_clock::now();
@@ -40,19 +41,18 @@ void t_insert(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
 
     for (auto i = 0; i < epoch; ++i) {
       my_map->insert(std::to_string(i), i);
-      assert(my_map->check());
     }
-
     auto end = high_resolution_clock::now();
     my_used.push_back(std::chrono::duration_cast<MS>(end - st));
+    assert(my_map->check());
   }
 
   std::cout << "INSERT:\n";
   print_info("std", std_used);
   print_info("my", my_used);
 }
-
-void t_iterator(std::map<std::string, int>& std_map, wzj::rb_tree& my_map) {
+template <typename _My>
+void t_iterator(std::map<std::string, int>& std_map, _My& my_map) {
   std::vector<MS> std_used;
   std::vector<MS> my_used;
 
@@ -91,13 +91,12 @@ void t_iterator(std::map<std::string, int>& std_map, wzj::rb_tree& my_map) {
   print_info("std", std_used);
   print_info("my", my_used);
 }
-
-void t_erase(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
+template <typename _My>
+void t_erase(std::map<std::string, int>* std_map, _My* my_map) {
   std::vector<MS> std_used;
   std::vector<MS> my_used;
 
   std::map<std::string, int> comp_map = *std_map;
-
 
   {  // std
     auto cit = comp_map.begin();
@@ -119,11 +118,12 @@ void t_erase(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
     for (int i = 0; i < epoch; ++i, ++cit) {
       assert(cit->second == it->second);
       it = my_map->erase(it);
-      assert(my_map->check());
     }
 
     auto end = high_resolution_clock::now();
     my_used.push_back(std::chrono::duration_cast<MS>(end - st));
+
+    assert(my_map->check());
   }
 
   if (std_map->size() != my_map->size()) {
@@ -138,13 +138,37 @@ void t_erase(std::map<std::string, int>* std_map, wzj::rb_tree* my_map) {
 }
 
 int main() {
+  size_t turn = 0;
+  while (true) {
+    std::cout << "Please input epoch: " << std::endl;
+    std::cin >> epoch;
 
-  std::map<std::string, int> std_map;
-  wzj::rb_tree my_map;
+    std::cout << "#TURN " << ++turn << " with epoch = " << epoch << std::endl;
 
-  t_insert(&std_map, &my_map);
-  t_iterator(std_map, my_map);
-  t_erase(&std_map, &my_map);
+#ifndef NRB_TREE
+    {
+      std::cout << "RB_TREE" << std::endl;
+      std::map<std::string, int> std_map;
+      wzj::rb_tree my_map;
+      t_insert(&std_map, &my_map);
+      t_iterator(std_map, my_map);
+      t_erase(&std_map, &my_map);
 
+      std::cout << my_map.statistics() << std::endl;
+    }
+#endif
+
+#ifndef NAVL_TREE
+    {
+      std::cout << "AVL_TREE" << std::endl;
+      std::map<std::string, int> std_map;
+      wzj::avl_tree my_map;
+      t_insert(&std_map, &my_map);
+      t_iterator(std_map, my_map);
+      //  t_erase(&std_map, &my_map);
+      std::cout << my_map.statistics() << std::endl;
+    }
+#endif
+  }
   return 0;
 }
