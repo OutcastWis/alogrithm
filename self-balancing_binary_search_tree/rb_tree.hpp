@@ -157,7 +157,7 @@ class rb_tree : public _tree_base {
     else if (__x->right_ == nullptr)
       n = __x->left_;
     else {
-      n = _rb_tree_node::left_most(__x->right_);
+      n = _tree_node::left_most(__x->right_);
       y = n->right_;
     }
 
@@ -188,13 +188,13 @@ class rb_tree : public _tree_base {
       if (header_->left_ == __x) {
         header_->left_ = __x->right_
                              ? (assert(n == __x->right_),
-                                n ? _rb_tree_node::left_most(n) : nullptr)
+                                n ? _tree_node::left_most(n) : nullptr)
                              : p;
       }
       if (header_->right_ == __x) {
         header_->right_ = __x->left_
                               ? (assert(n == __x->left_),
-                                 n ? _rb_tree_node::right_most(n) : nullptr)
+                                 n ? _tree_node::right_most(n) : nullptr)
                               : p;
       }
     }

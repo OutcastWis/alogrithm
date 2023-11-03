@@ -119,7 +119,7 @@ void t_erase(std::map<std::string, int>* std_map, _My* my_map) {
       assert(cit->second == it->second);
       it = my_map->erase(it);
     }
-
+    
     auto end = high_resolution_clock::now();
     my_used.push_back(std::chrono::duration_cast<MS>(end - st));
 
@@ -165,7 +165,7 @@ int main() {
       wzj::avl_tree my_map;
       t_insert(&std_map, &my_map);
       t_iterator(std_map, my_map);
-      //  t_erase(&std_map, &my_map);
+      t_erase(&std_map, &my_map);
       std::cout << my_map.statistics() << std::endl;
     }
 #endif
