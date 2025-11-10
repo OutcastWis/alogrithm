@@ -1,5 +1,3 @@
-#include <geo/test_geo.h>
-
 #include <cassert>
 
 #include <geo/segment2d.h>
@@ -34,4 +32,8 @@ namespace geo {
 		ipt = s1.intersect({ {9,12},{13,8} }, tol);
 		assert(ipt.second == false);
 	}
+}
+
+int main() {
+	geo::test_segment();
 }

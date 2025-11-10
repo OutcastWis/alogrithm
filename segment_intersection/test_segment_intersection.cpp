@@ -177,3 +177,8 @@ namespace wzj {
 		assert(ipts.size() == check.size());
 	}
 } 
+
+int main() {
+	wzj::test_segment_intersection_T();
+	wzj::test_segment_intersection();
+}
