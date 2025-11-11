@@ -13,6 +13,7 @@ add_subdirectory(boyer_moore)
 add_subdirectory(geo)
 add_subdirectory(segment_intersection)
 add_subdirectory(self-balancing_binary_search_tree)
+add_subdirectory(tree)
 
 
 
@@ -22,4 +23,5 @@ add_custom_target(project_all DEPENDS
     geo 
     segment_intersection 
     self-balancing_binary_search_tree
+    tree
     )
