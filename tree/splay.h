@@ -1,6 +1,21 @@
 #include <string>
 #include <utility>
 
+/**
+ * 伸展树(splay tree)特点:
+ * 1. 是一种自平衡二叉搜索树
+ * 2. 每次访问节点后, 都会通过旋转操作将该节点移动到树的根部
+ * 3. 可以简单看做LRU
+ * 
+ * 退化:
+ * 伸展树在最坏情况下可能退化为链表, 导致单次操作时间复杂度为O(n). 
+ * 例如: 
+ *  1. 当每次插入的节点都是当前树中最大的节点时, 树退化成左链.
+ *  2. 从小到大依次访问节点时, 树退化成左链.
+ */
+
+
+
 namespace wzj {
 class splay {
  public:
@@ -22,8 +37,8 @@ class splay {
 
   void _splay(node** z, node* x);  // 把z子树中的x节点旋转到z. z会被更新为x
   void _rotate(node* x);
-  void _zig(node* x);                     // 左旋, x是p的左子节点
-  void _zag(node* x);                     // 右旋, x是p的右子节点
+  void _zig(node* x);                     // 右旋, x是p的左子节点
+  void _zag(node* x);                     // 左旋, x是p的右子节点
   node* _merge(node* left, node* right);  // 合并两棵子树, 返回合并后的树根
   void _update(node* x);                  // 旋转后, 更新节点x的数据, 例如size
 
