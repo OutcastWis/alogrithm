@@ -2,8 +2,8 @@
 
 namespace wzj {
 /*
- * treap, 2叉平衡树 + 堆
- * 1. 这里的实现, 使用小根堆. node.rank来维护堆序性质. 即父节点rank小于子节点rank
+ * 旋转版本的treap, 2叉平衡树 + 堆.
+ * 1. 这里的实现, 使用小根堆. node.rank来维护堆序性质
  * 2. treap的单次旋转和splay一样, 都是标准的BST旋转操作 .但条件和意向不用.
  * 前者为了维护堆, 后者为了把访问的节点旋转到根节点
  * */
@@ -12,8 +12,8 @@ class treap {
   void insert(const std::string& key, int value);
   bool erase(const std::string& key);
   bool has(const std::string& key) const;
-  int get_rank(const std::string& key) const; // 返回key的排名, 即<=key的节点数
-  std::pair<std::string, int> kth(int r) const; // 返回第k小的值, k从1开始
+  int get_rank(const std::string& key) const;  // 返回key的排名, 即<=key的节点数
+  std::pair<std::string, int> kth(int r) const;  // 返回第k小的值, k从1开始
  private:
   struct node {
     node* left = nullptr;
