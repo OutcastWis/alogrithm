@@ -2,6 +2,7 @@
 #include <tree/scapegoat_tree.h>
 #include <tree/splay.h>
 #include <tree/treap.h>
+#include <tree/cartesian.h>
 
 #include <cassert>
 #include <chrono>
@@ -190,11 +191,30 @@ void test_fhq_treap() {
   assert(tree.kth(5) == -15);
 }
 
+void test_cartesian() {
+  int n = 100;
+  std::vector<int> data;
+  for (int i = 0; i < n; ++i) data.push_back(std::rand() % 100);
+
+  wzj::cartesian tree;
+  tree.build(data);
+
+  for (int i = 0;i < n; ++i) {
+    const auto& range = tree.range(i);
+    int cl = i, cr = i;
+    while (cl > 0 && data[cl-1] >= data[i]) --cl;
+    while (cr < n-1 && data[cr+1] >= data[i]) ++cr;
+    assert(cl == range.first);
+    assert(cr == range.second);
+  }
+}
+
 int main() {
   test_scapegoat_tree();
   test_time_compare_with_std_map();
   test_splay();
   test_treap();
   test_fhq_treap();
+  test_cartesian();
   return 0;
 }
