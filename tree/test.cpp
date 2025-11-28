@@ -3,6 +3,7 @@
 #include <tree/splay.h>
 #include <tree/treap.h>
 #include <tree/cartesian.h>
+#include <tree/aa_tree.h>
 
 #include <cassert>
 #include <chrono>
@@ -209,6 +210,45 @@ void test_cartesian() {
   }
 }
 
+void test_aa_tree() {
+    wzj::aa_tree tree;
+    tree.insert("apple");
+    tree.insert("banana");
+    tree.insert("cherry");
+    tree.insert("date");
+    tree.insert("elderberry");
+
+    assert(tree.has("apple") == true);
+    assert(tree.has("banana") == true);
+    assert(tree.has("cherry") == true);
+    assert(tree.has("date") == true);
+    assert(tree.has("elderberry") == true);
+    assert(tree.has("fig") == false);
+
+    auto r = tree.lower_bound("a");
+    assert(r.first && r.second == "apple");
+    r = tree.lower_bound("b");
+    assert(r.first && r.second == "banana");
+    r = tree.lower_bound("c");
+    assert(r.first && r.second == "cherry");
+    r = tree.lower_bound("date");
+    assert(r.first && r.second == "date");
+    r = tree.lower_bound("e");
+    assert(r.first && r.second == "elderberry");
+    r = tree.lower_bound("ele");
+    assert(r.first == false);
+
+    tree.erase("cherry");
+    assert(tree.has("cherry") == false);
+    tree.erase("apple");
+    assert(tree.has("apple") == false);
+
+    r = tree.lower_bound("apple");
+    assert(r.first && r.second == "banana");
+    r = tree.lower_bound("bb");
+    assert(r.first && r.second == "date");
+}
+
 int main() {
   test_scapegoat_tree();
   test_time_compare_with_std_map();
@@ -216,5 +256,6 @@ int main() {
   test_treap();
   test_fhq_treap();
   test_cartesian();
+  test_aa_tree();
   return 0;
 }
