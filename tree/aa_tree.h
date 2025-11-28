@@ -3,7 +3,7 @@
 
 namespace wzj {
 /// @brief aa树
-///
+/// https://iq.opengenus.org/aa-trees/
 /// 遵守和rb-tree一样的约束, 同时额外增加一个: 红不能是左孩子
 ///
 /// 每个节点维护level字段, 对应红黑树的黑高度:
