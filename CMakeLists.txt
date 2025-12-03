@@ -14,6 +14,7 @@ add_subdirectory(geo)
 add_subdirectory(segment_intersection)
 add_subdirectory(self-balancing_binary_search_tree)
 add_subdirectory(tree)
+add_subdirectory(binary_index_tree)
 
 
 
