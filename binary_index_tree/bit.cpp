@@ -21,7 +21,7 @@ namespace wzj {
     }
 
     void bit::clear() {
-        delete []c_;
+        delete []c_; c_ = nullptr;
         n_ = 0;
     }
 
