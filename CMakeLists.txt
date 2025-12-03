@@ -25,4 +25,5 @@ add_custom_target(project_all DEPENDS
     segment_intersection 
     self-balancing_binary_search_tree
     tree
+    binary_index_tree
     )
