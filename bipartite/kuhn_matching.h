@@ -2,7 +2,7 @@
 #include <vector>
 
 namespace wzj {
-/// @brief Kuhn匹配算法
+/// @brief Kuhn匹配算法. 复杂度O(nm), n是X点数, m是边数
 class kuhn_matching {
  public:
   kuhn_matching(int n1, int n2)
