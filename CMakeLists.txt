@@ -15,6 +15,7 @@ add_subdirectory(segment_intersection)
 add_subdirectory(self-balancing_binary_search_tree)
 add_subdirectory(tree)
 add_subdirectory(binary_index_tree)
+add_subdirectory(bipartite)
 
 
 
@@ -26,4 +27,5 @@ add_custom_target(project_all DEPENDS
     self-balancing_binary_search_tree
     tree
     binary_index_tree
+    bipartite
     )
