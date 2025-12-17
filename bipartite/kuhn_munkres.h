@@ -1,3 +1,4 @@
+#include <queue>
 #include <utility>
 #include <vector>
 
@@ -12,13 +13,14 @@ class kuhn_munkres {
   kuhn_munkres(int n);
   // X,Y节点数变成一样, 把最大权匹配变成最大权完美匹配
   kuhn_munkres(int n1, int n2) : kuhn_munkres(n1 > n2 ? n1 : n2) {}
-  void add_edge(int u, int v, int w) { w_[u][v] = w; }
+  // 简单起见, 不存在权值是负, 但非要匹配的情况
+  void add_edge(int u, int v, int w) { w_[u][v] = w > 0 ? w : 0; }
   std::vector<std::pair<int, int>> maximum_weight(int* weight);
 
  private:
-  void _bfs(int u);
+  void _find_augmenting_path(int u);
   bool _check(int u, std::queue<int>& q);
-  bool _tree(std::queue<int>& q); // 交替树上寻找增广路. q用于bfs遍历交替树
+  bool _tree(std::queue<int>& q);  // 交替树上寻找增广路. q用于bfs遍历交替树
 
  private:
   int n_;
@@ -27,7 +29,7 @@ class kuhn_munkres {
   std::vector<int> lx_, ly_;
   // slack[v] = min{ lx[u] + ly[v] - w[u,v] | u在S, v在T'}
   std::vector<int> slack_;
-  std::vector<bool> vx_, vy_; // 是否在交替树上
-  std::vector<int> path_; // path_[v]=u, 表示交替树上是从u走到v
+  std::vector<bool> vx_, vy_;  // 是否在交替树上
+  std::vector<int> path_;      // path_[v]=u, 表示交替树上是从u走到v
 };
 }  // namespace wzj

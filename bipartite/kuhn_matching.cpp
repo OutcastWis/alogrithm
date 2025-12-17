@@ -17,7 +17,7 @@ std::vector<std::pair<int, int>> kuhn_matching::maximum_matching() {
   while (true) {
     bool succ = false;
     visited_.assign(n1_, false);
-    for (int u = 0; u < n1_; ++u) succ |= ma_[u] == -1 && dfs(u);
+    for (int u = 0; u < n1_; ++u) succ |= ma_[u] == -1 && _dfs(u);
     if (!succ) break;
   }
 
@@ -28,7 +28,7 @@ std::vector<std::pair<int, int>> kuhn_matching::maximum_matching() {
   return matches;
 }
 
-bool kuhn_matching::dfs(int u) {
+bool kuhn_matching::_dfs(int u) {
   visited_[u] = true;
 
   for (auto v : graph_[u]) {
@@ -40,7 +40,7 @@ bool kuhn_matching::dfs(int u) {
   }
 
   for (auto v : graph_[u]) {
-    if (!visited_[mb_[v]] && dfs(mb_[v])) {
+    if (!visited_[mb_[v]] && _dfs(mb_[v])) {
       ma_[u] = v;
       mb_[v] = u;
       return true;

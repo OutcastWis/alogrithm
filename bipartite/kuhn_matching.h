@@ -11,7 +11,7 @@ class kuhn_matching {
   std::vector<std::pair<int, int>> maximum_matching();
 
  private:
-  bool dfs(int u);
+  bool _dfs(int u);
 
  private:
   int n1_, n2_;  // X, Y 的节点数

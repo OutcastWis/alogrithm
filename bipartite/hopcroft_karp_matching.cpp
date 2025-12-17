@@ -4,9 +4,9 @@
 
 namespace wzj {
 std::vector<std::pair<int, int>> hopcroft_karp_matching::maximum_match() {
-  while (bfs()) {
+  while (_bfs()) {
     for (int u = 0; u < n1_; ++u)
-      if (ma_[u] == -1) dfs(u);
+      if (ma_[u] == -1) _dfs(u);
   }
 
   std::vector<std::pair<int, int>> matches;
@@ -16,9 +16,9 @@ std::vector<std::pair<int, int>> hopcroft_karp_matching::maximum_match() {
   return matches;
 }
 
-bool hopcroft_karp_matching::dfs(int u) {
+bool hopcroft_karp_matching::_dfs(int u) {
   for (auto v : graph_[u]) {
-    if (mb_[v] == -1 || (level_[mb_[v]] == level_[u] + 1 && dfs(mb_[v]))) {
+    if (mb_[v] == -1 || (level_[mb_[v]] == level_[u] + 1 && _dfs(mb_[v]))) {
       ma_[u] = v;
       mb_[v] = u;
       return true;
@@ -30,7 +30,7 @@ bool hopcroft_karp_matching::dfs(int u) {
   return false;
 }
 
-bool hopcroft_karp_matching::bfs() {
+bool hopcroft_karp_matching::_bfs() {
   level_.assign(n1_, -1);
   std::queue<int> q;
   for (int u = 0; u < n1_; ++u)
